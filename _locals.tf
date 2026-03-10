@@ -11,10 +11,8 @@ locals {
   rg_name = var.resource_group.create ? azurerm_resource_group.this["this"].name : data.azurerm_resource_group.existing[0].name
   rg_loc  = var.resource_group.create ? azurerm_resource_group.this["this"].location : (try(var.resource_group.location, null) != null ? var.resource_group.location : data.azurerm_resource_group.existing[0].location)
 
-  # MySQL server name rules: lowercase letters, numbers, hyphen; <= 63 chars
-  base_mysql_name_raw = "mysql-${local.prefix}-${try(var.mysql.name_suffix, "001")}"
-  base_mysql_name     = substr(replace(lower(local.base_mysql_name_raw), "/[^0-9a-z-]/", "-"), 0, 63)
-  mysql_name          = coalesce(try(var.mysql.name, null), local.base_mysql_name)
+  # Resource names: use var.name directly as the full name
+  mysql_name = var.name
 
   private_enabled = try(var.private.enabled, false)
 
@@ -53,11 +51,11 @@ locals {
     : data.azurerm_private_dns_zone.existing[0].id
   ) : null
 
-  pe_name   = "pe-mysql-${local.mysql_name}"
-  psc_name  = "psc-mysql-${local.mysql_name}"
-  nic_name  = "nic-pe-mysql-${local.mysql_name}"
+  pe_name   = "pe-${local.mysql_name}"
+  psc_name  = "psc-${local.mysql_name}"
+  nic_name  = "nic-${local.mysql_name}"
 
-  vnet_link_name = "link-${local.prefix}-mysql"
+  vnet_link_name = "link-${local.mysql_name}"
 
   diag_enabled = try(var.diagnostics.enabled, false) && (try(var.diagnostics.log_analytics_workspace_id, null) != null || try(var.diagnostics.storage_account_id, null) != null || try(var.diagnostics.eventhub_authorization_rule_id, null) != null)
 }
