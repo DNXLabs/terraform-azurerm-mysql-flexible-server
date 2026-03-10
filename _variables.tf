@@ -33,7 +33,6 @@ variable "mysql" {
   description = "MySQL Flexible Server configuration."
   type = object({
     name        = optional(string)
-    name_suffix = optional(string, "001")
 
     sku_name = optional(string, "GP_Standard_D2ds_v4")
     version  = optional(string, "8.0.21")
